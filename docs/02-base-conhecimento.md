@@ -7,7 +7,7 @@ Descreva se usou os arquivos da pasta `data`, por exemplo:
 | Arquivo | Formato | Utilização no Agente |
 |---------|---------|---------------------|
 | `historico_atendimento.csv` | CSV | Contextualizar interações anteriores |
-| `perfil_investidor.json` | JSON | Personalizar recomendações |
+| `perfil_investidor.json` | JSON | Personalizar o ensino sobre finanças de tipos de investimento |
 | `produtos_financeiros.json` | JSON | Sugerir produtos adequados ao perfil |
 | `transacoes.csv` | CSV | Analisar padrão de gastos do cliente |
 
@@ -29,12 +29,52 @@ Descreva se usou os arquivos da pasta `data`, por exemplo:
 ### Como os dados são carregados?
 > Descreva como seu agente acessa a base de conhecimento.
 
-[ex: Os JSON/CSV são carregados no início da sessão e incluídos no contexto do prompt]
+Existem duas possibilidades, injetar os dados diretamente no prompt (Ctrl + C, Ctrl + V) ou carregar os arquivos via código, como no exemplo abaixo:
+
+import pandas as pd
+import json
+
+#CVs
+historico = pd.read_csv('data/historico_atendimento.csv')
+transacoes = pd.read_csv('data/transacoes.csv')
+
+#JSONs
+with open('data/perfil_investidor.json','r', encoding='uft-8') as f:
+    perfitl = json.load(f)
+
+with open('data/produtos_financeiros.json', 'r', encoding='uft-8') as f:
+    produtos = json.load(f)
 
 ### Como os dados são usados no prompt?
 > Os dados vão no system prompt? São consultados dinamicamente?
 
-[Sua descrição aqui]
+Para simplificar, podemos simplesmente "injetar" os dados em nosso prompt, garantindo que o Agente tenha o melhor contexto pessível. 
+Lembrando que, em soluções mais robustos, o ideal é que essas informações sejam carregadas dinamicamente para que possamos ganhar flexibilidade.
+
+DADOS DO CLIENTE E PERFIL (data/perfil_investidor.json):
+{
+  "nome": "João Silva",
+  "idade": 32,
+  "profissao": "Analista de Sistemas",
+  "renda_mensal": 5000.00,
+  "perfil_investidor": "moderado",
+  "objetivo_principal": "Construir reserva de emergência",
+  "patrimonio_total": 15000.00,
+  "reserva_emergencia_atual": 10000.00,
+  "aceita_risco": false,
+  "metas": [
+    {
+      "meta": "Completar reserva de emergência",
+      "valor_necessario": 15000.00,
+      "prazo": "2026-06"
+    },
+    {
+      "meta": "Entrada do apartamento",
+      "valor_necessario": 50000.00,
+      "prazo": "2027-12"
+    }
+  ]
+}
 
 ---
 
@@ -42,14 +82,22 @@ Descreva se usou os arquivos da pasta `data`, por exemplo:
 
 > Mostre um exemplo de como os dados são formatados para o agente.
 
-```
 Dados do Cliente:
 - Nome: João Silva
 - Perfil: Moderado
-- Saldo disponível: R$ 5.000
+- Objetivo: Construir reserva de emergência
+- Reserva atual: R$ 10.000 (meta: R$ 15.000)
 
-Últimas transações:
-- 01/11: Supermercado - R$ 450
-- 03/11: Streaming - R$ 55
-...
-```
+Resumo de Gastos:
+- Moradia: R$ 1.380
+- Alimentação: R$ 570
+- Transporte: R$ 295
+- Saúde: R$ 55,90
+- Total de saídas: R$ 2.488,90
+
+Produtos Disponíveis para Explicar:
+- Tesouro Selic (risco baixo)
+- CDB Liquidez Diária (risco baixo)
+- LCI/LCA (risco baixo)
+- Fundo Imobiliário - FII (risco médio)
+- Fundo de Ações (risco alto)
