@@ -7,7 +7,7 @@ import streamlit as st
 perfil = json.load(open('./data/perfil_investidor.json'))
 transacoes = pd.read_csv('./data/transacoes.csv')
 historico = pd.read_csv('./data/historico_atendimento.csv')
-produtos = json.load(open('./data/produtos.json'))
+produtos = json.load(open('./data/produtos_financeiros.json'))
 
 #======================= MONTAR CONTEXTO ==============================
 contexto = f"""
@@ -52,13 +52,19 @@ def perguntar(msg):
     
     Pergunta: {msg}"""
     
-    r = requests.post(OLLAMA_URL, json{"model": MODELO, "prompt": prompt, "stream": False})
-    return r.json()['response']
+    r = requests.post(
+    OLLAMA_URL,
+    json={"model": MODELO, "prompt": prompt, "stream": False}
+    )
+    return r.json().get("response", "Erro ao obter resposta do modelo.")
+
 
 #======================= INTERFACE ==============================
 st.title(" T Athena, Sou Educadora Financeira")
 
-if pergunta : st.chat_input("Sua dúvida sbore finanças..."):
+pergunta = st.chat_input("Sua dúvida sobre finanças...")
+
+if pergunta:
     st.chat_message("user").write(pergunta)
     with st.spinner("..."):
         st.chat_message("assistant").write(perguntar(pergunta))
