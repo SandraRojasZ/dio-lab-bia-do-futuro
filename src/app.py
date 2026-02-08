@@ -1,5 +1,7 @@
 import json
 import pandas as pd
+import requests
+import streamlit as st
 
 #======================= CARREGAR DADOS ==============================
 perfil = json.load(open('./data/perfil_investidor.json'))
@@ -40,3 +42,23 @@ REGRAS:
 - Sempre pergunte se o cliente entendeu;
 - Responda de forma sucinta e direta, com no máximo 3 parágrafos.
 """
+#======================= CHAMAR OLLAMA ==============================
+def perguntar(msg):
+    prompt = f"""
+    {SYSTEM_PROMPT}
+    
+    CONTEXTO DO CLIENTE:
+    {contexto}
+    
+    Pergunta: {msg}"""
+    
+    r = requests.post(OLLAMA_URL, json{"model": MODELO, "prompt": prompt, "stream": False})
+    return r.json()['response']
+
+#======================= INTERFACE ==============================
+st.title(" T Athena, Sou Educadora Financeira")
+
+if pergunta : st.chat_input("Sua dúvida sbore finanças..."):
+    st.chat_message("user").write(pergunta)
+    with st.spinner("..."):
+        st.chat_message("assistant").write(perguntar(pergunta))
